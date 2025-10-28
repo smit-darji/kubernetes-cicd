@@ -1,25 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: grade-submission-api
-  namespace: default
+  name: k8s-app
+  namespace: webapps
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: grade-submission-api
+      app: k8s-app
   template:
     metadata:
       labels:
-        app: grade-submission-api
+        app: k8s-app
     spec:
       imagePullSecrets:
       - name: ghcr-secret
       containers:
-      - name: grade-submission-api
-        image: ghcr.io/rslim087a/kubernetes-cicd-tutorial:latest
+      - name: k8s-app
+        image: smitdarji/k8s:latest   # ✅ this will be updated automatically by CI
         ports:
-        - containerPort: 3000
+        - containerPort: 80
         resources:
           limits:
             memory: "256Mi"
@@ -31,12 +31,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: grade-submission-api
-  namespace: default
+  name: k8s-app-service
+  namespace: webapps
 spec:
   selector:
-    app: grade-submission-api
+    app: k8s-app
   ports:
   - port: 80
-    targetPort: 3000
-  type: ClusterIP
+    targetPort: 80
+  type: NodePort
