@@ -17,7 +17,7 @@ spec:
       - name: ghcr-secret
       containers:
       - name: k8s-app
-        image: smitdarji/k8s:v0.0.10   # ✅ this will be updated automatically by CI
+        image: smitdarji/k8s:v0.0.11   # ✅ this will be updated automatically by CI
         ports:
         - containerPort: 80
         resources:
