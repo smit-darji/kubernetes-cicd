@@ -39,6 +39,7 @@ jobs:
       - name: Update deployment.yaml with new image tag
         run: |
           echo "🧩 Updating image tag in deployment.yaml..."
+          cat deployment.yaml
           sed -i "s|image: .*|image: smitdarji/k8s:v0.0.19|g" deployment.yaml
           cat deployment.yaml
 
