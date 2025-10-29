@@ -34,8 +34,7 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/${{ github.repository }}:latest
-            ghcr.io/${{ github.repository }}:v0.0.17
+            smitdarji/k8s:v0.0.19
 
       # 4️⃣ Update deployment.yaml in the same repo (ArgoCD watches this)
       - name: Update deployment.yaml with new image tag
