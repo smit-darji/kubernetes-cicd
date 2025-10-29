@@ -33,7 +33,7 @@ jobs:
           push: true
           tags: |
             smitdarji/k8s:latest
-            smitdarji/k8s:v0.0.19
+            smitdarji/k8s:v0.0.21
 
       # 4️⃣ Update deployment.yaml (for ArgoCD)
       - name: Update deployment.yaml with new image tag
