@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: CI/CD Pipeline (Docker + ArgoCD)
 
 on:
   push:
@@ -18,33 +18,40 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2️⃣ Login to Docker Hub
+      # 2️⃣ Extract version (auto from deployment.yaml or commit message)
+      - name: Extract image tag
+        id: vars
+        run: |
+          TAG=$(grep 'image:' deployment.yaml | sed 's/.*://')
+          echo "TAG=$TAG" >> $GITHUB_ENV
+          echo "Using tag: $TAG"
+
+      # 3️⃣ Login to Docker Hub
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # 3️⃣ Build and push Docker image
-      - name: Build and push Docker image to Docker Hub
+      # 4️⃣ Build and push Docker image
+      - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
           tags: |
             smitdarji/k8s:latest
-            smitdarji/k8s:v0.0.21
+            smitdarji/k8s:${{ env.TAG }}
 
-      # 4️⃣ Update deployment.yaml (for ArgoCD)
+      # 5️⃣ Update deployment.yaml with the new tag
       - name: Update deployment.yaml with new image tag
         run: |
-          echo "🧩 Updating image tag in deployment.yaml..."
-          cat deployment.yaml
-          sed -i "s|image: .*|image: smitdarji/k8s:v0.0.19|g" deployment.yaml
+          echo "🧩 Updating deployment.yaml..."
+          sed -i "s|image: .*|image: smitdarji/k8s:${{ env.TAG }}|g" deployment.yaml
           cat deployment.yaml
 
           git config --global user.email "actions@github.com"
           git config --global user.name "GitHub Actions"
           git add deployment.yaml
-          git commit -m "Update image to v0.0.19" || echo "No changes to commit"
+          git commit -m "Auto-update image to ${{ env.TAG }}" || echo "No changes to commit"
           git push
