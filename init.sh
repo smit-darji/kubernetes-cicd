@@ -41,7 +41,13 @@ kubectl create namespace $ARGOCD_NAMESPACE || echo "Namespace already exists"
 echo "============================================================"
 echo "🔹 STEP 5: Install ArgoCD using Helm"
 echo "============================================================"
-helm install argocd argo/argo-cd --namespace $ARGOCD_NAMESPACE
+
+if helm status argocd -n $ARGOCD_NAMESPACE >/dev/null 2>&1; then
+  echo "✅ ArgoCD already installed. Skipping Helm install."
+else
+  helm install argocd argo/argo-cd --namespace $ARGOCD_NAMESPACE
+fi
+
 
 echo "============================================================"
 echo "🔹 STEP 6: Wait for ArgoCD Pods to be ready"
